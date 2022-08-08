@@ -1,5 +1,5 @@
 /* SPDX-License-Identifier: GPL-2.0 */
-static const char *__doc__ = "Simple XDP prog doing XDP_PASS\n";
+static const char *__doc__ = "Body Guard XDP prog.\n";
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -40,7 +40,7 @@ static const struct option_wrapper long_options[] = {
 	{{0, 0, NULL,  0 }, NULL, false}
 };
 
-int load_bpf_object_file__simple(const char *filename)
+int load_bpf_object_file__bodyguard(const char *filename)
 {
 	int first_prog_fd = -1;
 	struct bpf_object *obj;
@@ -123,11 +123,11 @@ int xdp_link_attach(int ifindex, __u32 xdp_flags, int prog_fd)
 	return EXIT_OK;
 }
 
-int main(int argc, char **argv)
+int main(int argc, char *argv[])
 {
 	struct bpf_prog_info info = {};
 	__u32 info_len = sizeof(info);
-	char filename[256] = "xdp_pass_kern.o";
+	char filename[256] = "bodyguard_xdp_kern.o";
 	int prog_fd, err;
 
 	struct config cfg = {
@@ -147,7 +147,7 @@ int main(int argc, char **argv)
 		return xdp_link_detach(cfg.ifindex, cfg.xdp_flags);
 
 	/* Load the BPF-ELF object file and get back first BPF_prog FD */
-	prog_fd = load_bpf_object_file__simple(filename);
+	prog_fd = load_bpf_object_file__bodyguard(filename);
 	if (prog_fd <= 0) {
 		fprintf(stderr, "ERR: loading file: %s\n", filename);
 		return EXIT_FAIL_BPF;
